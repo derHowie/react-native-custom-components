@@ -141,6 +141,15 @@ class NavigatorNavigationBar extends React.Component {
       var props = this._getReusableProps(componentName, index);
       if (component && interpolate[componentName](props.style, amount)) {
         props.pointerEvents = props.style.opacity === 0 ? 'none' : 'box-none';
+        // FROM JESSE: For some reason theh interpolater will cause certain style
+        // props to be NaN, which can crash the app. We (hackily) fix this by removing those styles below
+        if (props.style && typeof props.style === 'object') {
+          for (let k in props.style) {
+            if (Number.isNaN(props.style[k])) {
+              delete props.style[k];
+            }
+          }
+        }
         component.setNativeProps(props);
       }
     }, this);
